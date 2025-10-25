@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for todo app */
+.task-completed {
+  @apply line-through text-gray-400;
+}
+
+.task-high-priority {
+  @apply border-l-4 border-red-500;
+}
