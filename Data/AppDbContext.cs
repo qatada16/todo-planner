@@ -31,7 +31,7 @@ namespace todo_planner.Data
                     Id = 1,
                     Name = "John Doe",
                     Email = "john@example.com",
-                    Password = "password123", // We'll hash this later
+                    PasswordHash = "password123", // We'll hash this later
                     CreatedAt = staticDate.AddDays(-10)
                 },
                 new User
@@ -39,7 +39,7 @@ namespace todo_planner.Data
                     Id = 2,
                     Name = "Jane Smith",
                     Email = "jane@example.com",
-                    Password = "password123",
+                    PasswordHash = "password123",
                     CreatedAt = staticDate.AddDays(-5)
                 }
             );

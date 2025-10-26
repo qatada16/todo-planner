@@ -37,7 +37,7 @@ namespace todo_planner.Pages.Admin
             {
                 Name = name,
                 Email = email,
-                Password = password, // In real app, hash this!
+                PasswordHash = password, // In real app, hash this!
                 CreatedAt = DateTime.Now
             };
 

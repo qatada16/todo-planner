@@ -1,0 +1,29 @@
+🎨 SMART TODO PLANNER - COLOR SCHEME
+
+Primary Colors:
+- Primary Blue: #3B82F6 (buttons, main actions)
+- Primary Green: #10B981 (success, completion)
+- Primary Orange: #F59E0B (warnings, medium priority)
+
+Secondary Colors:
+- Dark Blue: #1E40AF (hover states)
+- Dark Green: #047857 (completed tasks)
+- Dark Orange: #D97706 (active states)
+
+Neutral Colors:
+- Gray-50: #F9FAFB (background)
+- Gray-100: #F3F4F6 (cards, sections)
+- Gray-800: #1F2937 (text)
+- Gray-600: #4B5563 (secondary text)
+
+Status Colors:
+- High Priority: #EF4444 (red)
+- Medium Priority: #F59E0B (orange) 
+- Low Priority: #10B981 (green)
+- Completed: #6B7280 (gray)
+
+Usage:
+- Background: bg-gradient-to-br from-blue-50 to-green-50
+- Cards: bg-white with shadow
+- Buttons: bg-primary-blue hover:bg-dark-blue
+- Text: text-gray-800 (main), text-gray-600 (secondary)
