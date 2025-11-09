@@ -7,9 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-// Add DbContext with SQLite
+// Add DbContext with SQLite with better configuration
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"), 
+        sqliteOptions =>
+        {
+            sqliteOptions.CommandTimeout(60); // Increase command timeout
+        });
+});
 
 // Add Session for authentication
 builder.Services.AddDistributedMemoryCache();
@@ -39,21 +45,43 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-// Add session middleware
-app.UseSession();
-app.UseRouting();
-app.UseAuthorization();
 
+// Add session middleware BEFORE routing
+app.UseSession();
+
+app.UseRouting();
+
+// Remove or comment out UseAuthorization since we're not using Identity
+// app.UseAuthorization();
 
 app.MapRazorPages();
+
 // Redirect root to login
 app.MapGet("/", () => Results.Redirect("/Login"));
 
-// Initialize database on startup (REMOVE the Users.Any() check)
-// using (var scope = app.Services.CreateScope())
-// {
-//     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//     dbContext.Database.Migrate(); // This applies any pending migrations
-// }
+// Initialize database on startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate(); // This applies any pending migrations
+    
+    // Seed initial data if needed
+    await SeedData.Initialize(scope.ServiceProvider);
+}
 
 app.Run();
+
+// Seed data class (add this at the end of Program.cs file)
+public static class SeedData
+{
+    public static async Task Initialize(IServiceProvider serviceProvider)
+    {
+        using var context = new AppDbContext(
+            serviceProvider.GetRequiredService<DbContextOptions<AppDbContext>>());
+
+        // Ensure database is created and migrations are applied
+        await context.Database.MigrateAsync();
+
+        // You can add initial seed data here if needed
+    }
+}

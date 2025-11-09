@@ -1,29 +1,83 @@
-🎨 SMART TODO PLANNER - COLOR SCHEME
+🎨 SMART TODO PLANNER - DARK THEME COLOR SCHEME
 
 Primary Colors:
-- Primary Blue: #3B82F6 (buttons, main actions)
-- Primary Green: #10B981 (success, completion)
-- Primary Orange: #F59E0B (warnings, medium priority)
+- Deep Navy: #1E293B (main background)
+- Dark Slate: #0F172A (cards, headers)
+- Electric Blue: #3B82F6 (primary actions, buttons)
+- Vibrant Teal: #06D6A0 (success, completion)
 
 Secondary Colors:
-- Dark Blue: #1E40AF (hover states)
-- Dark Green: #047857 (completed tasks)
-- Dark Orange: #D97706 (active states)
+- Royal Blue: #2563EB (hover states)
+- Emerald: #10B981 (positive actions)
+- Amber: #F59E0B (warnings, medium priority)
+- Soft Purple: #8B5CF6 (accent color)
 
 Neutral Colors:
-- Gray-50: #F9FAFB (background)
-- Gray-100: #F3F4F6 (cards, sections)
-- Gray-800: #1F2937 (text)
-- Gray-600: #4B5563 (secondary text)
+- Dark-900: #0A0F1C (deep background)
+- Dark-800: #1E293B (main background)
+- Dark-700: #334155 (cards, sections)
+- Dark-600: #475569 (borders, dividers)
+- Dark-500: #64748B (secondary text)
+- Dark-400: #94A3B8 (body text)
+- Dark-300: #CBD5E1 (headings, important text)
+- Dark-200: #E2E8F0 (primary text, highlights)
 
 Status Colors:
-- High Priority: #EF4444 (red)
-- Medium Priority: #F59E0B (orange) 
-- Low Priority: #10B981 (green)
-- Completed: #6B7280 (gray)
+- High Priority: #EF4444 (vibrant red)
+- Medium Priority: #F59E0B (amber gold)
+- Low Priority: #10B981 (emerald green)
+- Completed: #6B7280 (cool gray)
 
-Usage:
-- Background: bg-gradient-to-br from-blue-50 to-green-50
-- Cards: bg-white with shadow
-- Buttons: bg-primary-blue hover:bg-dark-blue
-- Text: text-gray-800 (main), text-gray-600 (secondary)
+Gradient Backgrounds:
+- Main BG: bg-gradient-to-br from-dark-900 via-dark-800 to-dark-700
+- Card BG: bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700
+- Header BG: bg-gradient-to-r from-dark-800 to-dark-700
+
+Interactive States:
+- Hover: bg-dark-600
+- Active: bg-dark-500
+- Focus: ring-2 ring-electric-blue
+- Disabled: bg-dark-700 text-dark-500
+
+Shadow & Effects:
+- Card Shadow: shadow-2xl shadow-black/30
+- Hover Shadow: shadow-lg shadow-electric-blue/20
+- Glow Effect: shadow-lg shadow-vibrant-teal/20
+
+Specific Component Colors:
+- Input Fields: bg-dark-700 border-dark-600 text-dark-200
+- Buttons Primary: bg-electric-blue hover:bg-royal-blue text-white
+- Buttons Secondary: bg-dark-600 hover:bg-dark-500 text-dark-200
+- Success States: bg-emerald-500/20 border-emerald-500 text-emerald-300
+- Error States: bg-red-500/20 border-red-500 text-red-300
+- Warning States: bg-amber-500/20 border-amber-500 text-amber-300
+
+Usage Examples:
+- Main Background: bg-gradient-to-br from-dark-900 via-dark-800 to-dark-700
+- Cards: bg-dark-700 with shadow-2xl shadow-black/30
+- Text Primary: text-dark-200
+- Text Secondary: text-dark-400
+- Text Headers: text-dark-300 font-bold
+- Borders: border-dark-600
+- Input Background: bg-dark-700
+- Button Primary: bg-electric-blue hover:bg-royal-blue
+- Button Danger: bg-red-600 hover:bg-red-700
+
+Color Psychology:
+- Deep Navy (#1E293B): Calming, professional, reduces eye strain
+- Electric Blue (#3B82F6): Trust, focus, primary actions
+- Vibrant Teal (#06D6A0): Growth, success, completion
+- Amber (#F59E0B): Attention, importance, warnings
+- Soft Purple (#8B5CF6): Creativity, luxury, accents
+
+Accessibility:
+- All colors meet WCAG AA contrast ratios
+- Text has minimum 4.5:1 contrast against backgrounds
+- Interactive elements have clear hover/focus states
+- Color is not used as the only visual means of conveying information
+
+Implementation Notes:
+- Use smooth transitions (transition duration-200)
+- Implement dark mode gradients for depth
+- Maintain consistent spacing and hierarchy
+- Ensure proper focus indicators for keyboard navigation

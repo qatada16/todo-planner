@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http;
 using todo_planner.Services;
 
 namespace todo_planner.Pages
@@ -50,7 +51,8 @@ namespace todo_planner.Pages
 
                 _logger.LogInformation($"User {user.Email} logged in successfully");
 
-                return RedirectToPage("/Index");
+                // Redirect to user-specific dashboard
+                return RedirectToPage("/User", new { userId = user.Id });
             }
             catch (Exception ex)
             {
@@ -58,6 +60,12 @@ namespace todo_planner.Pages
                 ErrorMessage = "An error occurred during login";
                 return Page();
             }
+        }
+
+        public IActionResult OnPostLogout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToPage("/Login");
         }
     }
 }
