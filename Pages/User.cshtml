@@ -1,4 +1,4 @@
-@page "/User/{userId}"
+@* @page "/User/{userId}"
 @using TaskStatus = todo_planner.Models.TaskStatus;
 @using TaskPriority = todo_planner.Models.TaskPriority;
 @using todo_planner.Models
@@ -20,7 +20,7 @@
             <div class="flex items-center space-x-4">
                 <span class="text-gray-600">User ID: @(Model.CurrentUser?.Id ?? 0)</span>
                 <form method="post" asp-page="/Login" asp-page-handler="Logout">
-                    <button type="submit" 
+                    <button type="submit"
                             class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                         <i class="fas fa-sign-out-alt mr-2"></i>Logout
                     </button>
@@ -78,34 +78,34 @@
         <div class="lg:col-span-1">
             <div class="bg-white rounded-xl shadow-lg p-6 sticky top-6">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Add New Task</h2>
-                
+
                 <form method="post" asp-page-handler="AddTask" class="space-y-4">
                     <input type="hidden" name="userId" value="@Model.CurrentUser!.Id" />
-                    
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Task Title</label>
-                        <input type="text" asp-for="NewTask.Title" 
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                        <input type="text" asp-for="NewTask.Title"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                placeholder="What needs to be done?" required>
                         <span asp-validation-for="NewTask.Title" class="text-red-600 text-sm"></span>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <textarea asp-for="NewTask.Description" 
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                        <textarea asp-for="NewTask.Description"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                   rows="3" placeholder="Add details..."></textarea>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
-                            <input type="date" asp-for="NewTask.DueDate" 
+                            <input type="date" asp-for="NewTask.DueDate"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
-                            <select asp-for="NewTask.Priority" 
+                            <select asp-for="NewTask.Priority"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 <option value="Low">⭐ Low</option>
                                 <option value="Medium">⭐⭐ Medium</option>
@@ -114,7 +114,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" 
+                    <button type="submit"
                             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 transform hover:scale-105">
                         <i class="fas fa-plus mr-2"></i>Add Task
                     </button>
@@ -127,19 +127,19 @@
             <!-- Filter Tabs -->
             <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
                 <div class="flex space-x-4 border-b border-gray-200">
-                    <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "all" })" 
+                    <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "all" })"
                        class="@(Model.CurrentFilter == "all" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-600") pb-4 px-4 font-medium">
                         All Tasks (@(Model.Tasks.Count + Model.CompletedTasks.Count))
                     </a>
-                    <a href="@Url.Page("/User", new { userId = Model.CurrentUser.Id, filter = "active" })" 
+                    <a href="@Url.Page("/User", new { userId = Model.CurrentUser.Id, filter = "active" })"
                        class="@(Model.CurrentFilter == "active" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-600") pb-4 px-4 font-medium">
                         Active (@Model.Tasks.Count)
                     </a>
-                    <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "completed" })" 
+                    <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "completed" })"
                        class="@(Model.CurrentFilter == "completed" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-600") pb-4 px-4 font-medium">
                         Completed (@Model.CompletedTasks.Count)
                     </a>
-                    <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "high" })" 
+                    <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "high" })"
                        class="@(Model.CurrentFilter == "high" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-600") pb-4 px-4 font-medium">
                         High Priority (@Model.HighPriorityTasks.Count)
                     </a>
@@ -181,19 +181,19 @@
                                         </span>
                                     }
                                 </div>
-                                
+
                                 @if (!string.IsNullOrEmpty(task.Description))
                                 {
                                     <p class="text-gray-600 mb-3">@task.Description</p>
                                 }
-                                
+
                                 <div class="flex items-center space-x-4 text-sm text-gray-500">
                                     <span><i class="fas fa-calendar mr-1"></i>Due: @task.DueDate.ToString("MMM dd, yyyy")</span>
                                     <span><i class="fas fa-flag mr-1"></i>@task.Priority Priority</span>
                                     <span><i class="fas fa-circle mr-1"></i>@task.Status</span>
                                 </div>
                             </div>
-                            
+
                             <div class="flex items-center space-x-2 ml-4">
                                 @if (task.Status != TaskStatus.Completed)
                                 {
@@ -201,19 +201,19 @@
                                         <input type="hidden" name="userId" value="@Model.CurrentUser.Id" />
                                         <input type="hidden" name="taskId" value="@task.Id" />
                                         <input type="hidden" name="status" value="Completed" />
-                                        <button type="submit" 
+                                        <button type="submit"
                                                 class="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition duration-200"
                                                 title="Mark Complete">
                                             <i class="fas fa-check"></i>
                                         </button>
                                     </form>
                                 }
-                                
-                                <form method="post" asp-page-handler="DeleteTask" 
+
+                                <form method="post" asp-page-handler="DeleteTask"
                                       onsubmit="return confirm('Are you sure you want to delete this task?');">
                                     <input type="hidden" name="userId" value="@Model.CurrentUser.Id" />
                                     <input type="hidden" name="taskId" value="@task.Id" />
-                                    <button type="submit" 
+                                    <button type="submit"
                                             class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition duration-200"
                                             title="Delete Task">
                                         <i class="fas fa-trash"></i>
@@ -234,6 +234,54 @@
                 }
             </div>
         </div>
+    </div>
+</div>
+
+<div id="editTaskModal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">Edit Task</h2>
+        <form method="post" asp-page-handler="EditTask">
+            <input type="hidden" id="editTaskId" name="TaskId" />
+            <input type="hidden" id="editUserId" name="UserId" value="@Model.CurrentUser.Id" />
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Title</label>
+                <input type="text" id="editTaskTitle" name="Title" class="w-full px-4 py-2 border rounded-lg" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="editTaskDescription" name="Description" class="w-full px-4 py-2 border rounded-lg"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Due Date</label>
+                <input type="date" id="editTaskDueDate" name="DueDate" class="w-full px-4 py-2 border rounded-lg" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Priority</label>
+                <select id="editTaskPriority" name="Priority" class="w-full px-4 py-2 border rounded-lg">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Status</label>
+                <select id="editTaskStatus" name="Status" class="w-full px-4 py-2 border rounded-lg">
+                    <option value="Pending">Pending</option>
+                    <option value="InProgress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <button type="button" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg" onclick="closeEditPopup()">Cancel</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Save</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -259,34 +307,35 @@
             _ => "bg-gray-100 text-gray-800"
         };
     }
-}
+} *@
 
-@* Dark Theme *@
-@* @page "/User/{userId}"
+
+@* Dark THeme *@
+@page "/User/{userId}"
 @using TaskStatus = todo_planner.Models.TaskStatus;
 @using TaskPriority = todo_planner.Models.TaskPriority;
 @using todo_planner.Models
 @model todo_planner.Pages.UserModel
 @{
-    @* Layout = "_DashboardLayout"; *@
-    @* var titleName = Model.CurrentUser?.Name ?? "User";
+    // safe title when CurrentUser could be null
+    var titleName = Model.CurrentUser?.Name ?? "User";
     ViewData["Title"] = $"{titleName}'s Dashboard";
-} *@ 
+}
 
-@* <div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+<div class="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-700 rounded-2xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
         <div class="mb-8">
             <div class="flex justify-between items-center">
                 <div>
-                    <h1 class="text-3xl font-bold text-white">Welcome, @(Model.CurrentUser?.Name ?? "User")!</h1>
-                    <p class="text-gray-300 mt-2">Manage your tasks efficiently</p>
+                    <h1 class="text-3xl font-bold text-dark-200 glow-text">Welcome, @(Model.CurrentUser?.Name ?? "User")!</h1>
+                    <p class="text-dark-400 mt-2">Manage your tasks efficiently</p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span class="text-gray-300 bg-gray-700 px-3 py-1 rounded-lg">User ID: @(Model.CurrentUser?.Id ?? 0)</span>
+                    <span class="text-dark-300 font-medium">User ID: @(Model.CurrentUser?.Id ?? 0)</span>
                     <form method="post" asp-page="/Login" asp-page-handler="Logout">
-                        <button type="submit" 
-                                class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 transform hover:scale-105">
+                        <button type="submit"
+                                class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-red-500/30">
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
                         </button>
                     </form>
@@ -294,62 +343,45 @@
             </div>
         </div>
 
-        <!-- Success/Error Messages -->
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="mb-6 bg-green-900 border border-green-600 text-green-200 px-4 py-3 rounded-lg flex items-center">
-                <i class="fas fa-check-circle mr-3"></i>
-                <span>@TempData["SuccessMessage"]</span>
-            </div>
-        }
-
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="mb-6 bg-red-900 border border-red-600 text-red-200 px-4 py-3 rounded-lg flex items-center">
-                <i class="fas fa-exclamation-circle mr-3"></i>
-                <span>@TempData["ErrorMessage"]</span>
-            </div>
-        }
-
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:bg-gray-750 transition duration-200">
+            <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-6 border-l-4 border-electric-blue hover:shadow-electric-blue/20 transition duration-300 transform hover:-translate-y-1">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-300 text-sm font-medium">Total Tasks</p>
-                        <p class="text-3xl font-bold text-white mt-2">@(Model.Tasks.Count + Model.CompletedTasks.Count)</p>
+                        <p class="text-dark-400 text-sm font-medium">Total Tasks</p>
+                        <p class="text-3xl font-bold text-dark-200">@(Model.Tasks.Count + Model.CompletedTasks.Count)</p>
                     </div>
-                    <i class="fas fa-tasks text-blue-400 text-2xl"></i>
+                    <i class="fas fa-tasks text-electric-blue text-2xl"></i>
                 </div>
             </div>
 
-            <div class="bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:bg-gray-750 transition duration-200">
+            <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-6 border-l-4 border-vibrant-teal hover:shadow-vibrant-teal/20 transition duration-300 transform hover:-translate-y-1">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-300 text-sm font-medium">Completed</p>
-                        <p class="text-3xl font-bold text-white mt-2">@Model.CompletedTasks.Count</p>
+                        <p class="text-dark-400 text-sm font-medium">Completed</p>
+                        <p class="text-3xl font-bold text-dark-200">@Model.CompletedTasks.Count</p>
                     </div>
-                    <i class="fas fa-check-circle text-green-400 text-2xl"></i>
+                    <i class="fas fa-check-circle text-vibrant-teal text-2xl"></i>
                 </div>
             </div>
 
-            <div class="bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-yellow-500 hover:bg-gray-750 transition duration-200">
+            <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-6 border-l-4 border-amber-500 hover:shadow-amber-500/20 transition duration-300 transform hover:-translate-y-1">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-300 text-sm font-medium">High Priority</p>
-                        <p class="text-3xl font-bold text-white mt-2">@Model.HighPriorityTasks.Count</p>
+                        <p class="text-dark-400 text-sm font-medium">High Priority</p>
+                        <p class="text-3xl font-bold text-dark-200">@Model.HighPriorityTasks.Count</p>
                     </div>
-                    <i class="fas fa-exclamation-triangle text-yellow-400 text-2xl"></i>
+                    <i class="fas fa-exclamation-triangle text-amber-500 text-2xl"></i>
                 </div>
             </div>
 
-            <div class="bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-red-500 hover:bg-gray-750 transition duration-200">
+            <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-6 border-l-4 border-red-500 hover:shadow-red-500/20 transition duration-300 transform hover:-translate-y-1">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-300 text-sm font-medium">Due Today</p>
-                        <p class="text-3xl font-bold text-white mt-2">@Model.DueTodayTasks.Count</p>
+                        <p class="text-dark-400 text-sm font-medium">Due Today</p>
+                        <p class="text-3xl font-bold text-dark-200">@Model.DueTodayTasks.Count</p>
                     </div>
-                    <i class="fas fa-calendar-day text-red-400 text-2xl"></i>
+                    <i class="fas fa-calendar-day text-red-500 text-2xl"></i>
                 </div>
             </div>
         </div>
@@ -358,37 +390,37 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Add Task Form -->
             <div class="lg:col-span-1">
-                <div class="bg-gray-800 rounded-xl shadow-lg p-6 sticky top-6 border border-gray-700">
-                    <h2 class="text-2xl font-bold text-white mb-6">Add New Task</h2>
-                    
+                <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-6 sticky top-6 border border-dark-600">
+                    <h2 class="text-2xl font-bold text-dark-200 mb-6">Add New Task</h2>
+
                     <form method="post" asp-page-handler="AddTask" class="space-y-4">
                         <input type="hidden" name="userId" value="@Model.CurrentUser!.Id" />
-                        
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-200 mb-2">Task Title</label>
-                            <input type="text" asp-for="NewTask.Title" 
-                                   class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition duration-200" 
+                            <label class="block text-sm font-medium text-dark-300 mb-2">Task Title</label>
+                            <input type="text" asp-for="NewTask.Title"
+                                   class="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-dark-200 placeholder-dark-500 focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-200"
                                    placeholder="What needs to be done?" required>
-                            <span asp-validation-for="NewTask.Title" class="text-red-400 text-sm mt-1 block"></span>
+                            <span asp-validation-for="NewTask.Title" class="text-red-400 text-sm"></span>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-200 mb-2">Description</label>
-                            <textarea asp-for="NewTask.Description" 
-                                      class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 transition duration-200" 
+                            <label class="block text-sm font-medium text-dark-300 mb-2">Description</label>
+                            <textarea asp-for="NewTask.Description"
+                                      class="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-dark-200 placeholder-dark-500 focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-200"
                                       rows="3" placeholder="Add details..."></textarea>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-200 mb-2">Due Date</label>
-                                <input type="date" asp-for="NewTask.DueDate" 
-                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white transition duration-200">
+                                <label class="block text-sm font-medium text-dark-300 mb-2">Due Date</label>
+                                <input type="date" asp-for="NewTask.DueDate"
+                                       class="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-dark-200 focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-200">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-200 mb-2">Priority</label>
-                                <select asp-for="NewTask.Priority" 
-                                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white transition duration-200">
+                                <label class="block text-sm font-medium text-dark-300 mb-2">Priority</label>
+                                <select asp-for="NewTask.Priority"
+                                        class="w-full px-3 py-3 bg-dark-800 border border-dark-600 rounded-lg text-dark-200 focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-200">
                                     <option value="Low">⭐ Low</option>
                                     <option value="Medium">⭐⭐ Medium</option>
                                     <option value="High">⭐⭐⭐ High</option>
@@ -396,8 +428,8 @@
                             </div>
                         </div>
 
-                        <button type="submit" 
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 transform hover:scale-105 shadow-lg">
+                        <button type="submit"
+                                class="w-full bg-electric-blue hover:bg-royal-blue text-white font-semibold py-3 px-6 rounded-lg transition duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-electric-blue/30">
                             <i class="fas fa-plus mr-2"></i>Add Task
                         </button>
                     </form>
@@ -407,22 +439,22 @@
             <!-- Tasks List -->
             <div class="lg:col-span-2">
                 <!-- Filter Tabs -->
-                <div class="bg-gray-800 rounded-xl shadow-lg p-6 mb-6 border border-gray-700">
-                    <div class="flex space-x-4 border-b border-gray-700">
-                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "all" })" 
-                           class="@(Model.CurrentFilter == "all" ? "border-b-2 border-blue-500 text-blue-400 font-semibold" : "text-gray-400 hover:text-white") pb-4 px-4 font-medium transition duration-200">
+                <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-6 mb-6 border border-dark-600">
+                    <div class="flex space-x-4 border-b border-dark-600">
+                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "all" })"
+                           class="@(Model.CurrentFilter == "all" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-400 hover:text-dark-200") pb-4 px-4 font-medium transition duration-200">
                             All Tasks (@(Model.Tasks.Count + Model.CompletedTasks.Count))
                         </a>
-                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser.Id, filter = "active" })" 
-                           class="@(Model.CurrentFilter == "active" ? "border-b-2 border-blue-500 text-blue-400 font-semibold" : "text-gray-400 hover:text-white") pb-4 px-4 font-medium transition duration-200">
+                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser.Id, filter = "active" })"
+                           class="@(Model.CurrentFilter == "active" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-400 hover:text-dark-200") pb-4 px-4 font-medium transition duration-200">
                             Active (@Model.Tasks.Count)
                         </a>
-                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "completed" })" 
-                           class="@(Model.CurrentFilter == "completed" ? "border-b-2 border-blue-500 text-blue-400 font-semibold" : "text-gray-400 hover:text-white") pb-4 px-4 font-medium transition duration-200">
+                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "completed" })"
+                           class="@(Model.CurrentFilter == "completed" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-400 hover:text-dark-200") pb-4 px-4 font-medium transition duration-200">
                             Completed (@Model.CompletedTasks.Count)
                         </a>
-                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "high" })" 
-                           class="@(Model.CurrentFilter == "high" ? "border-b-2 border-blue-500 text-blue-400 font-semibold" : "text-gray-400 hover:text-white") pb-4 px-4 font-medium transition duration-200">
+                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "high" })"
+                           class="@(Model.CurrentFilter == "high" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-400 hover:text-dark-200") pb-4 px-4 font-medium transition duration-200">
                             High Priority (@Model.HighPriorityTasks.Count)
                         </a>
                     </div>
@@ -442,62 +474,71 @@
 
                     @foreach (var task in tasksToShow)
                     {
-                        <div class="bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 @GetPriorityBorder(task.Priority) @(task.Status == TaskStatus.Completed ? "opacity-70" : "") border border-gray-700 hover:bg-gray-750 transition duration-200">
+                        <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-6 border-l-4 @GetPriorityBorder(task.Priority) @(task.Status == TaskStatus.Completed ? "opacity-75" : "") hover:shadow-lg transition duration-300 transform hover:-translate-y-1 border border-dark-600">
                             <div class="flex justify-between items-start">
                                 <div class="flex-1">
-                                    <div class="flex items-center space-x-3 mb-3">
-                                        <h3 class="text-lg font-semibold text-white @(task.Status == TaskStatus.Completed ? "line-through" : "")">@task.Title</h3>
-                                        <span class="px-3 py-1 @GetPriorityBadge(task.Priority) text-xs rounded-full font-medium border">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <h3 class="text-lg font-semibold text-dark-200 @(task.Status == TaskStatus.Completed ? "line-through" : "")">@task.Title</h3>
+                                        <span class="px-2 py-1 @GetPriorityBadge(task.Priority) text-xs rounded-full font-medium">
                                             @task.Priority
                                         </span>
-                                        @if (task.DueDate.Date == DateTime.Today && task.Status != TaskStatus.Completed)
+                                        @if (task.DueDate.Date == DateTime.Today)
                                         {
-                                            <span class="px-3 py-1 bg-red-900 text-red-200 text-xs rounded-full font-medium border border-red-700">
+                                            <span class="px-2 py-1 bg-red-500/20 border border-red-500 text-red-300 text-xs rounded-full font-medium">
                                                 Due Today!
                                             </span>
                                         }
                                         else if (task.DueDate.Date < DateTime.Today && task.Status != TaskStatus.Completed)
                                         {
-                                            <span class="px-3 py-1 bg-red-900 text-red-200 text-xs rounded-full font-medium border border-red-700">
+                                            <span class="px-2 py-1 bg-red-500/20 border border-red-500 text-red-300 text-xs rounded-full font-medium">
                                                 Overdue
                                             </span>
                                         }
                                     </div>
-                                    
+
                                     @if (!string.IsNullOrEmpty(task.Description))
                                     {
-                                        <p class="text-gray-300 mb-4 leading-relaxed">@task.Description</p>
+                                        <p class="text-dark-400 mb-3">@task.Description</p>
                                     }
-                                    
-                                    <div class="flex items-center space-x-6 text-sm text-gray-400">
-                                        <span class="flex items-center"><i class="fas fa-calendar mr-2"></i>Due: @task.DueDate.ToString("MMM dd, yyyy")</span>
-                                        <span class="flex items-center"><i class="fas fa-flag mr-2"></i>@task.Priority Priority</span>
-                                        <span class="flex items-center"><i class="fas fa-circle mr-2"></i>@task.Status</span>
+
+                                    <div class="flex items-center space-x-4 text-sm text-dark-500">
+                                        <span><i class="fas fa-calendar mr-1"></i>Due: @task.DueDate.ToString("MMM dd, yyyy")</span>
+                                        <span><i class="fas fa-flag mr-1"></i>@task.Priority Priority</span>
+                                        <span><i class="fas fa-circle mr-1"></i>@task.Status</span>
                                     </div>
                                 </div>
-                                
-                                <div class="flex items-center space-x-3 ml-4">
+
+                                <div class="flex items-center space-x-2 ml-4">
                                     @if (task.Status != TaskStatus.Completed)
                                     {
                                         <form method="post" asp-page-handler="UpdateStatus">
                                             <input type="hidden" name="userId" value="@Model.CurrentUser.Id" />
                                             <input type="hidden" name="taskId" value="@task.Id" />
                                             <input type="hidden" name="status" value="Completed" />
-                                            <button type="submit" 
-                                                    class="bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg transition duration-200 transform hover:scale-110 shadow-md"
+                                            <button type="submit"
+                                                    class="bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-lg transition duration-200 transform hover:scale-110 hover:shadow-lg hover:shadow-emerald-500/30"
                                                     title="Mark Complete">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                         </form>
+
+                                        <!-- Edit Button -->
+                                        <button type="button"
+                                                class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition duration-200 transform hover:scale-110 hover:shadow-lg hover:shadow-blue-500/30"
+                                                title="Edit Task"
+                                                onclick="openEditPopup(@task.Id, '@task.Title', '@task.Description', '@task.DueDate.ToString("yyyy-MM-dd")', '@task.Priority', '@task.Status')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
                                     }
-                                    
-                                    <form method="post" asp-page-handler="DeleteTask" 
+
+                                    <form method="post" asp-page-handler="DeleteTask"
                                           onsubmit="return confirm('Are you sure you want to delete this task?');">
                                         <input type="hidden" name="userId" value="@Model.CurrentUser.Id" />
                                         <input type="hidden" name="taskId" value="@task.Id" />
-                                        <button type="submit" 
-                                                class="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg transition duration-200 transform hover:scale-110 shadow-md"
-                                                title="Delete Task">
+                                        <button type="button"
+                                                class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition duration-200 transform hover:scale-110 hover:shadow-lg hover:shadow-red-500/30"
+                                                title="Delete Task"
+                                                onclick="openDeletePopup(@task.Id)">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -508,10 +549,10 @@
 
                     @if (!tasksToShow.Any())
                     {
-                        <div class="bg-gray-800 rounded-xl shadow-lg p-12 text-center border border-gray-700">
-                            <i class="fas fa-check-circle text-green-400 text-5xl mb-4"></i>
-                            <h3 class="text-xl font-semibold text-white mb-2">No tasks found</h3>
-                            <p class="text-gray-300">@(Model.CurrentFilter == "completed" ? "No completed tasks yet!" : "Add your first task to get started!")</p>
+                        <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-12 text-center border border-dark-600">
+                            <i class="fas fa-check-circle text-vibrant-teal text-5xl mb-4"></i>
+                            <h3 class="text-xl font-semibold text-dark-200 mb-2">No tasks found</h3>
+                            <p class="text-dark-400">@(Model.CurrentFilter == "completed" ? "No completed tasks yet!" : "Add your first task to get started!")</p>
                         </div>
                     }
                 </div>
@@ -520,15 +561,129 @@
     </div>
 </div>
 
+<div id="editTaskModal" class="fixed inset-0 bg-black bg-opacity-50 items-center flex justify-center hidden overflow-y-auto">
+    <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 px-6 py-2 w-full max-w-md border border-dark-600">
+        <h2 class="text-2xl font-bold text-dark-200 mb-6">Edit Task</h2>
+        <form method="post" asp-page-handler="EditTask" class="space-y-4">
+            <input type="hidden" id="editTaskId" name="TaskId" />
+            <input type="hidden" id="editUserId" name="UserId" value="@Model.CurrentUser.Id" />
+
+            <div>
+                <label class="block text-sm font-medium text-dark-300 mb-2">Title</label>
+                <input type="text" id="editTaskTitle" name="Title"
+                       class="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-dark-200 placeholder-dark-500 focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-200"
+                       required />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-dark-300 mb-2">Description</label>
+                <textarea id="editTaskDescription" name="Description"
+                          class="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-dark-200 placeholder-dark-500 focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-200"
+                          rows="3"></textarea>
+            </div>
+
+            <!-- Due Date and Priority in the same row -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-dark-300 mb-2">Due Date</label>
+                    <input type="date" id="editTaskDueDate" name="DueDate"
+                           class="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-dark-200 focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-200"
+                           required />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-dark-300 mb-2">Priority</label>
+                    <select id="editTaskPriority" name="Priority"
+                            class="w-full px-3 py-3 bg-dark-800 border border-dark-600 rounded-lg text-dark-200 focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-200">
+                        <option value="Low">⭐ Low</option>
+                        <option value="Medium">⭐⭐ Medium</option>
+                        <option value="High">⭐⭐⭐ High</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-dark-300 mb-2">Status</label>
+                <select id="editTaskStatus" name="Status"
+                        class="w-full px-3 py-3 bg-dark-800 border border-dark-600 rounded-lg text-dark-200 focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-200">
+                    <option value="Pending">Pending</option>
+                    <option value="InProgress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <button type="button"
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg"
+                        onclick="closeEditPopup()">Cancel</button>
+                <button type="submit"
+                        class="bg-electric-blue hover:bg-royal-blue text-white px-4 py-2 rounded-lg transition duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-electric-blue/30">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="deleteTaskModal" class="fixed inset-0 bg-black bg-opacity-50 items-center flex justify-center hidden overflow-y-auto">
+    <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 px-6 py-6 w-full max-w-md border border-dark-600">
+        <h2 class="text-2xl font-bold text-dark-200 mb-6">Delete Task</h2>
+        <p class="text-dark-400 mb-6">Are you sure you want to delete this task? This action cannot be undone.</p>
+        <form method="post" asp-page-handler="DeleteTask">
+            <input type="hidden" id="deleteTaskId" name="TaskId" />
+            <input type="hidden" id="deleteUserId" name="UserId" value="@Model.CurrentUser.Id" />
+
+            <div class="flex justify-end space-x-4">
+                <button type="button"
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg"
+                        onclick="closeDeletePopup()">Cancel</button>
+                <button type="submit"
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-red-500/30">
+                    Delete
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditPopup(taskId, title, description, dueDate, priority, status) {
+        document.getElementById('editTaskId').value = taskId;
+        document.getElementById('editTaskTitle').value = title;
+        document.getElementById('editTaskDescription').value = description || "";
+        document.getElementById('editTaskDueDate').value = dueDate;
+        document.getElementById('editTaskPriority').value = priority;
+        document.getElementById('editTaskStatus').value = status;
+
+        document.getElementById('editTaskModal').classList.remove('hidden');
+    }
+
+    function closeEditPopup() {
+        document.getElementById('editTaskModal').classList.add('hidden');
+    }
+
+    function openDeletePopup(taskId) {
+        // Set the task ID in the hidden input field
+        document.getElementById('deleteTaskId').value = taskId;
+
+        // Show the delete confirmation popup
+        document.getElementById('deleteTaskModal').classList.remove('hidden');
+    }
+
+    function closeDeletePopup() {
+        // Hide the delete confirmation popup
+        document.getElementById('deleteTaskModal').classList.add('hidden');
+    }
+</script>
+
 @functions {
     private string GetPriorityBorder(TaskPriority priority)
     {
         return priority switch
         {
             TaskPriority.High => "border-red-500",
-            TaskPriority.Medium => "border-yellow-500",
-            TaskPriority.Low => "border-green-500",
-            _ => "border-gray-500"
+            TaskPriority.Medium => "border-amber-500",
+            TaskPriority.Low => "border-emerald-600",
+            _ => "border-dark-600"
         };
     }
 
@@ -536,10 +691,10 @@
     {
         return priority switch
         {
-            TaskPriority.High => "bg-red-900 text-red-200 border-red-700",
-            TaskPriority.Medium => "bg-yellow-900 text-yellow-200 border-yellow-700",
-            TaskPriority.Low => "bg-green-900 text-green-200 border-green-700",
-            _ => "bg-gray-700 text-gray-300 border-gray-600"
+            TaskPriority.High => "bg-red-500/20 border border-red-500 text-red-300",
+            TaskPriority.Medium => "bg-amber-500/20 border border-amber-500 text-amber-300",
+            TaskPriority.Low => "bg-emerald-500/20 border border-emerald-500 text-emerald-300",
+            _ => "bg-dark-600 text-dark-300"
         };
     }
-} *@
+}

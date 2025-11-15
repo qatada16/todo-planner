@@ -16,7 +16,7 @@
                         <div class="bg-todo-primary rounded-lg p-2">
                             <i class="fas fa-tasks text-white text-xl"></i>
                         </div>
-                        <h1 class="text-2xl font-bold text-gray-800">Smart Todo Planner</h1>
+                        <h1 class="text-2xl font-bold text-white">Smart Todo Planner</h1>
                     </div>
                     @* <div class="space-x-4">
                         <a class="text-gray-600 hover:text-todo-primary transition" asp-page="/Index">
@@ -34,12 +34,15 @@
         </nav>
     </header>
 
-    <main class="bg-slate-600 shadow-lg container mx-auto px-2 py-8">
+    @* <main class="bg-slate-600 shadow-lg container mx-auto px-2 py-8">
+        @RenderBody()
+    </main> *@
+    <main>
         @RenderBody()
     </main>
 
-    <footer class="bg-white border-t mt-12">
-        <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+    <footer class="bg-gradient-to-br from-blue-900 to-green-800 border-t mt-12">
+        <div class="container mx-auto px-4 py-6 text-center text-white">
             <i class="fas fa-brain text-todo-primary mr-2"></i>
             &copy; 2025 - Smart Todo Planner - Stay Productive!
         </div>

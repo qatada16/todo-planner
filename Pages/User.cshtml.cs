@@ -93,9 +93,9 @@ namespace todo_planner.Pages
                 var task = new Models.Task
                 {
                     Title = NewTask.Title,
-                    Description = NewTask.Description,
+                    Description = NewTask.Description??string.Empty,
                     DueDate = NewTask.DueDate,
-                    Priority = TaskPriority.Medium,
+                    Priority = NewTask.Priority,
                     Status = TaskStatus.Pending,
                     UserId = userId,
                     CreatedAt = DateTime.Now,
@@ -121,7 +121,7 @@ namespace todo_planner.Pages
                 var task = await _context.Tasks.FindAsync(taskId);
                 if (task != null && task.UserId == userId)
                 {
-                    task.Status = TaskStatus.Pending;
+                    task.Status = TaskStatus.Completed;
                     task.UpdatedAt = DateTime.Now;
                     await _context.SaveChangesAsync();
                 }
@@ -154,6 +154,26 @@ namespace todo_planner.Pages
                 return RedirectToPage("/User", new { userId });
             }
         }
+
+        public async Task<IActionResult> OnPostEditTaskAsync(int taskId, int userId, string title, string? description, DateTime dueDate, TaskPriority priority, TaskStatus status)
+        {
+            var task = await _context.Tasks.FindAsync(taskId);
+            if (task == null || task.UserId != userId)
+            {
+                return NotFound();
+            }
+
+            task.Title = title;
+            task.Description = description ?? string.Empty;
+            task.DueDate = dueDate;
+            task.Priority = priority;
+            task.Status = status;
+            task.UpdatedAt = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("/User", new { userId });
+        }
     }
 
     public class TaskInputModel
@@ -162,8 +182,8 @@ namespace todo_planner.Pages
         [StringLength(100)]
         public string Title { get; set; } = string.Empty;
 
-        [StringLength(500)]
-        public string Description { get; set; } = string.Empty;
+        // Make Description nullable and remove validation attributes
+        public string? Description { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
