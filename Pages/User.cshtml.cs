@@ -174,6 +174,27 @@ namespace todo_planner.Pages
 
             return RedirectToPage("/User", new { userId });
         }
+        public string GetPriorityBorder(TaskPriority priority)
+        {
+            return priority switch
+            {
+                TaskPriority.High => "border-red-500",
+                TaskPriority.Medium => "border-amber-500",
+                TaskPriority.Low => "border-emerald-600",
+                _ => "border-dark-600"
+            };
+        }
+
+        public string GetPriorityBadge(TaskPriority priority)
+        {
+            return priority switch
+            {
+                TaskPriority.High => "bg-red-500/20 border border-red-500 text-red-300",
+                TaskPriority.Medium => "bg-amber-500/20 border border-amber-500 text-amber-300",
+                TaskPriority.Low => "bg-emerald-500/20 border border-emerald-500 text-emerald-300",
+                _ => "bg-dark-600 text-dark-300"
+            };
+        }
     }
 
     public class TaskInputModel
@@ -192,4 +213,6 @@ namespace todo_planner.Pages
         [Required]
         public TaskPriority Priority { get; set; } = TaskPriority.Medium;
     }
+
+    
 }
