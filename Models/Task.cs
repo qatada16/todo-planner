@@ -47,5 +47,51 @@ namespace todo_planner.Models
         // Helper properties for UI
         public bool IsOverdue => DueDate < DateTime.Today && Status != TaskStatus.Completed;
         public bool IsImportant => Priority == TaskPriority.High;
+
+        /// <summary>
+        /// State Pattern Implementation
+        /// The task delegates state-specific behavior to ITaskState objects
+        /// This replaces complex conditional logic with polymorphic behavior
+        /// </summary>
+        
+        /// <summary>
+        /// Changes the task state using State Pattern
+        /// Validates transition and executes state-specific behavior
+        /// </summary>
+        public void ChangeState(TaskStatus newStatus)
+        {
+            var currentState = TaskStateFactory.CreateState(Status);
+            var newState = TaskStateFactory.CreateState(newStatus);
+            
+            // Validate state transition
+            if (!currentState.CanTransitionTo(newStatus))
+            {
+                throw new InvalidOperationException(
+                    $"Cannot transition task from {currentState.StatusName} to {newState.StatusName}");
+            }
+            
+            // Update the status
+            Status = newStatus;
+            
+            // Execute state-specific behavior
+            newState.OnStateEntered(this);
+        }
+
+        /// <summary>
+        /// Helper method to get current state object
+        /// Useful for UI and business logic
+        /// </summary>
+        public ITaskState GetCurrentState()
+        {
+            return TaskStateFactory.CreateState(Status);
+        }
+
+        /// <summary>
+        /// UI helper methods that delegate to state object
+        /// Demonstrates how state pattern simplifies client code
+        /// </summary>
+        public string GetStatusColor() => GetCurrentState().GetStatusColor();
+        public string GetStatusIcon() => GetCurrentState().GetStatusIcon();
+        public string GetStatusName() => GetCurrentState().StatusName;
     }
 }

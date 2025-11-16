@@ -1,3 +1,4 @@
+// State Pattern implementation for Task Statuses
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -81,13 +82,6 @@ namespace todo_planner.Pages
                 return RedirectToPage("/User", new { userId });
             }
 
-            if (!ModelState.IsValid)
-            {
-                // Reload data for the page
-                await OnGetAsync(userId, CurrentFilter);
-                return Page();
-            }
-
             try
             {
                 var task = new Models.Task
@@ -114,6 +108,10 @@ namespace todo_planner.Pages
             }
         }
 
+        /// <summary>
+        /// Updated to use State Pattern for status transitions
+        /// Demonstrates proper state transition validation and state-specific behavior
+        /// </summary>
         public async Task<IActionResult> OnPostUpdateStatusAsync(int userId, int taskId, string status)
         {
             try
@@ -121,11 +119,23 @@ namespace todo_planner.Pages
                 var task = await _context.Tasks.FindAsync(taskId);
                 if (task != null && task.UserId == userId)
                 {
-                    task.Status = TaskStatus.Completed;
-                    task.UpdatedAt = DateTime.Now;
-                    await _context.SaveChangesAsync();
+                    // Convert string to enum
+                    if (Enum.TryParse<TaskStatus>(status, out var newStatus))
+                    {
+                        // Use State Pattern to change task status
+                        // This validates the transition and executes state-specific behavior
+                        task.ChangeState(newStatus);
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
+                return RedirectToPage("/User", new { userId });
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Handle invalid state transitions gracefully
+                _logger.LogWarning(ex, "Invalid state transition attempted");
+                TempData["ErrorMessage"] = ex.Message;
                 return RedirectToPage("/User", new { userId });
             }
             catch (Exception ex)
@@ -163,17 +173,23 @@ namespace todo_planner.Pages
                 return NotFound();
             }
 
+            // Use State Pattern when changing status in edit
+            if (task.Status != status)
+            {
+                task.ChangeState(status);
+            }
+
             task.Title = title;
             task.Description = description ?? string.Empty;
             task.DueDate = dueDate;
             task.Priority = priority;
-            task.Status = status;
             task.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
             return RedirectToPage("/User", new { userId });
         }
+
         public string GetPriorityBorder(TaskPriority priority)
         {
             return priority switch
@@ -195,6 +211,26 @@ namespace todo_planner.Pages
                 _ => "bg-dark-600 text-dark-300"
             };
         }
+
+        /// <summary>
+        /// State Pattern helper method for UI
+        /// Gets the status color using state pattern
+        /// </summary>
+        public string GetStatusColor(TaskStatus status)
+        {
+            var state = Models.TaskStateFactory.CreateState(status);
+            return state.GetStatusColor();
+        }
+
+        /// <summary>
+        /// State Pattern helper method for UI
+        /// Gets the status icon using state pattern
+        /// </summary>
+        public string GetStatusIcon(TaskStatus status)
+        {
+            var state = Models.TaskStateFactory.CreateState(status);
+            return state.GetStatusIcon();
+        }
     }
 
     public class TaskInputModel
@@ -213,6 +249,4 @@ namespace todo_planner.Pages
         [Required]
         public TaskPriority Priority { get; set; } = TaskPriority.Medium;
     }
-
-    
 }

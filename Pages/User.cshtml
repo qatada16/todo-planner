@@ -1,3 +1,4 @@
+@* State Pattern Implementation *@
 @* Dark THeme *@
 @page "/User/{userId}"
 @using TaskStatus = todo_planner.Models.TaskStatus;
@@ -192,13 +193,52 @@
                                     <div class="flex items-center space-x-4 text-sm text-dark-500">
                                         <span><i class="fas fa-calendar mr-1"></i>Due: @task.DueDate.ToString("MMM dd, yyyy")</span>
                                         <span><i class="fas fa-flag mr-1"></i>@task.Priority Priority</span>
-                                        <span><i class="fas fa-circle mr-1"></i>@task.Status</span>
+                                        <span class="flex items-center">
+                                            <i class="@Model.GetStatusIcon(task.Status) mr-1 text-@Model.GetStatusColor(task.Status)-500"></i>
+                                            @task.Status
+                                        </span>
                                     </div>
                                 </div>
 
                                 <div class="flex items-center space-x-2 ml-4">
+                                    <!-- Buttons for tasks that are NOT completed -->
                                     @if (task.Status != TaskStatus.Completed)
                                     {
+                                        @if (task.Status != TaskStatus.Pending)
+                                        {
+                                            <form method="post" asp-page-handler="UpdateStatus">
+                                                <input type="hidden" name="userId" value="@Model.CurrentUser.Id" />
+                                                <input type="hidden" name="taskId" value="@task.Id" />
+                                                <input type="hidden" name="status" value="Pending" />
+                                                <button type="submit"
+                                                        class="bg-yellow-600 hover:bg-yellow-700 text-white p-2 rounded-lg transition duration-200 transform hover:scale-110 hover:shadow-lg hover:shadow-yellow-500/30"
+                                                        title="Mark as Pending">
+                                                    <i class="fas fa-clock"></i>
+                                                </button>
+                                            </form>
+                                        }
+
+                                        @if (task.Status != TaskStatus.InProgress)
+                                        {
+                                            <form method="post" asp-page-handler="UpdateStatus">
+                                                <input type="hidden" name="userId" value="@Model.CurrentUser.Id" />
+                                                <input type="hidden" name="taskId" value="@task.Id" />
+                                                <input type="hidden" name="status" value="InProgress" />
+                                                <button type="submit"
+                                                        class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition duration-200 transform hover:scale-110 hover:shadow-lg hover:shadow-blue-500/30"
+                                                        title="Start Progress">
+                                                    <i class="fas fa-spinner"></i>
+                                                </button>
+                                            </form>
+                                        }
+
+                                        <button type="button"
+                                                class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition duration-200 transform hover:scale-110 hover:shadow-lg hover:shadow-blue-500/30"
+                                                title="Edit Task"
+                                                onclick="openEditPopup(@task.Id, '@task.Title', '@task.Description', '@task.DueDate.ToString("yyyy-MM-dd")', '@task.Priority', '@task.Status')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+
                                         <form method="post" asp-page-handler="UpdateStatus">
                                             <input type="hidden" name="userId" value="@Model.CurrentUser.Id" />
                                             <input type="hidden" name="taskId" value="@task.Id" />
@@ -209,18 +249,10 @@
                                                 <i class="fas fa-check"></i>
                                             </button>
                                         </form>
-
-                                        <!-- Edit Button -->
-                                        <button type="button"
-                                                class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition duration-200 transform hover:scale-110 hover:shadow-lg hover:shadow-blue-500/30"
-                                                title="Edit Task"
-                                                onclick="openEditPopup(@task.Id, '@task.Title', '@task.Description', '@task.DueDate.ToString("yyyy-MM-dd")', '@task.Priority', '@task.Status')">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
                                     }
 
-                                    <form method="post" asp-page-handler="DeleteTask"
-                                          onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                    <!-- Delete Button (always visible) -->
+                                    <form method="post" asp-page-handler="DeleteTask">
                                         <input type="hidden" name="userId" value="@Model.CurrentUser.Id" />
                                         <input type="hidden" name="taskId" value="@task.Id" />
                                         <button type="button"
