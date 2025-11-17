@@ -159,3 +159,7 @@ namespace todo_planner.Models
         }
     }
 }
+
+
+// This file implements a design pattern known as the State Pattern for managing the
+//  behavior of tasks within the ToDo planner application
