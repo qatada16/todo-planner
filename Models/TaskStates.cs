@@ -1,3 +1,5 @@
+// Additional documentation added for clarity and maintainability.
+
 using System.ComponentModel.DataAnnotations;
 
 namespace todo_planner.Models
@@ -12,30 +14,30 @@ namespace todo_planner.Models
         /// Gets the display name of the state
         /// </summary>
         string StatusName { get; }
-        
+
         /// <summary>
         /// Gets the enum value of the state
         /// </summary>
         TaskStatus StatusValue { get; }
-        
+
         /// <summary>
         /// Validates if transition to new state is allowed
         /// Encapsulates state transition rules
         /// </summary>
         bool CanTransitionTo(TaskStatus newStatus);
-        
+
         /// <summary>
         /// Handles state-specific behavior when state changes
         /// Each state can have its own unique logic
         /// </summary>
         void OnStateEntered(Task task);
-        
+
         /// <summary>
         /// Gets the CSS color class for UI display
         /// State-specific UI representation
         /// </summary>
         string GetStatusColor();
-        
+
         /// <summary>
         /// Gets the icon class for UI display
         /// State-specific visual representation
@@ -51,7 +53,7 @@ namespace todo_planner.Models
     {
         public string StatusName => "Pending";
         public TaskStatus StatusValue => TaskStatus.Pending;
-        
+
         /// <summary>
         /// Pending tasks can transition to InProgress or Completed
         /// Encapsulates state transition rules for pending state
@@ -60,7 +62,7 @@ namespace todo_planner.Models
         {
             return newStatus == TaskStatus.InProgress || newStatus == TaskStatus.Completed;
         }
-        
+
         /// <summary>
         /// State-specific behavior when task becomes pending
         /// </summary>
@@ -69,8 +71,15 @@ namespace todo_planner.Models
             task.UpdatedAt = DateTime.Now;
             // Could add pending-specific logic here, like notifications
         }
-        
+
+        /// <summary>
+        /// Color used for pending status badge in UI.
+        /// </summary>       
         public string GetStatusColor() => "yellow";
+
+        /// <summary>
+        /// Icon shown when a task is pending.
+        /// </summary>
         public string GetStatusIcon() => "fas fa-clock";
     }
 
@@ -82,7 +91,7 @@ namespace todo_planner.Models
     {
         public string StatusName => "In Progress";
         public TaskStatus StatusValue => TaskStatus.InProgress;
-        
+
         /// <summary>
         /// In-progress tasks can transition to Completed or back to Pending
         /// Encapsulates state transition rules for in-progress state
@@ -91,7 +100,7 @@ namespace todo_planner.Models
         {
             return newStatus == TaskStatus.Completed || newStatus == TaskStatus.Pending;
         }
-        
+
         /// <summary>
         /// State-specific behavior when task enters in-progress state
         /// </summary>
@@ -100,8 +109,15 @@ namespace todo_planner.Models
             task.UpdatedAt = DateTime.Now;
             // Could add in-progress specific logic here
         }
-        
+
+        /// <summary>
+        /// Icon displayed for an in-progress task.
+        /// </summary>
         public string GetStatusColor() => "blue";
+
+        /// <summary>
+        /// Icon displayed for an in-progress task.
+        /// </summary>
         public string GetStatusIcon() => "fas fa-spinner";
     }
 
@@ -113,7 +129,7 @@ namespace todo_planner.Models
     {
         public string StatusName => "Completed";
         public TaskStatus StatusValue => TaskStatus.Completed;
-        
+
         /// <summary>
         /// Completed tasks can be reopened to Pending or InProgress
         /// Encapsulates state transition rules for completed state
@@ -122,7 +138,7 @@ namespace todo_planner.Models
         {
             return newStatus == TaskStatus.Pending || newStatus == TaskStatus.InProgress;
         }
-        
+
         /// <summary>
         /// State-specific behavior when task is completed
         /// Sets completion timestamp and updates task
@@ -132,8 +148,16 @@ namespace todo_planner.Models
             task.UpdatedAt = DateTime.Now;
             // Could add completion-specific logic here, like analytics
         }
-        
+
+
+        /// <summary>
+        /// UI color for completed tasks.
+        /// </summary>
         public string GetStatusColor() => "green";
+
+        /// <summary>
+        /// Icon shown when a task is marked as completed.
+        /// </summary>
         public string GetStatusIcon() => "fas fa-check-circle";
     }
 
