@@ -2,17 +2,30 @@ using todo_planner.Models;
 using todo_planner.Data;
 using Microsoft.EntityFrameworkCore;
 
+    /// <summary>
+    /// Service for handling user authentication and registration.
+    /// Encapsulates login and registration logic.
+    /// </summary>
 namespace todo_planner.Services
 {
     public class AuthService
     {
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of AuthService with the given database context.
+        /// </summary>
+        /// <param name="context">Database context used for accessing Users table</param>
         public AuthService(AppDbContext context)
         {
             _context = context;
         }
 
+
+        /// <summary>
+        /// Registers a new user.
+        /// Returns null if email already exists.
+        /// </summary>
         public async Task<User?> RegisterAsync(string name, string email, string password)
         {
             // Check if user already exists
@@ -34,6 +47,12 @@ namespace todo_planner.Services
 
             return user;
         }
+
+
+        /// <summary>
+        /// Logs in a user with email and password.
+        /// Returns null if invalid.
+        /// </summary>
 
         public async Task<User?> LoginAsync(string email, string password)
         {
