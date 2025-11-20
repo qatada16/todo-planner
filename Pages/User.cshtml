@@ -21,7 +21,7 @@
                     <p class="text-dark-400 mt-2">Manage your tasks efficiently</p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span class="text-dark-300 font-medium">User ID: @(Model.CurrentUser?.Id ?? 0)</span>
+                    @* <span class="text-dark-300 font-medium">User ID: @(Model.CurrentUser?.Id ?? 0)</span> *@
                     <form method="post" asp-page="/Login" asp-page-handler="Logout">
                         <button type="submit"
                                 class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-red-500/30">
@@ -131,19 +131,19 @@
                 <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-6 mb-6 border border-dark-600">
                     <div class="flex space-x-4 border-b border-dark-600">
                         <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "all" })"
-                           class="@(Model.CurrentFilter == "all" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-400 hover:text-dark-200") pb-4 px-4 font-medium transition duration-200">
+                           class="@(Model.CurrentFilter == "all" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
                             All Tasks (@(Model.Tasks.Count + Model.CompletedTasks.Count))
                         </a>
                         <a href="@Url.Page("/User", new { userId = Model.CurrentUser.Id, filter = "active" })"
-                           class="@(Model.CurrentFilter == "active" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-400 hover:text-dark-200") pb-4 px-4 font-medium transition duration-200">
+                           class="@(Model.CurrentFilter == "active" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
                             Active (@Model.Tasks.Count)
                         </a>
                         <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "completed" })"
-                           class="@(Model.CurrentFilter == "completed" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-400 hover:text-dark-200") pb-4 px-4 font-medium transition duration-200">
+                           class="@(Model.CurrentFilter == "completed" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
                             Completed (@Model.CompletedTasks.Count)
                         </a>
                         <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "high" })"
-                           class="@(Model.CurrentFilter == "high" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-400 hover:text-dark-200") pb-4 px-4 font-medium transition duration-200">
+                           class="@(Model.CurrentFilter == "high" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
                             High Priority (@Model.HighPriorityTasks.Count)
                         </a>
                     </div>
@@ -190,7 +190,7 @@
                                         <p class="text-dark-400 mb-3">@task.Description</p>
                                     }
 
-                                    <div class="flex items-center space-x-4 text-sm text-dark-500">
+                                    <div class="flex items-center space-x-4 text-sm text-dark-300">
                                         <span><i class="fas fa-calendar mr-1"></i>Due: @task.DueDate.ToString("MMM dd, yyyy")</span>
                                         <span><i class="fas fa-flag mr-1"></i>@task.Priority Priority</span>
                                         <span class="flex items-center">
