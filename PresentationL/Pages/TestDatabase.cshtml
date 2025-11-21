@@ -1,0 +1,39 @@
+@page
+@using Microsoft.EntityFrameworkCore
+@using todo_planner.DataL.Data
+@inject AppDbContext DbContext
+
+@{
+    ViewData["Title"] = "Database Test";
+}
+
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Database Test Page</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Users Count -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Users</h2>
+            <p class="text-2xl font-bold text-blue-600">@DbContext.Users.Count()</p>
+            <p class="text-gray-600">Total users in database</p>
+        </div>
+
+        <!-- Tasks Count -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Tasks</h2>
+            <p class="text-2xl font-bold text-green-600">@DbContext.Tasks.Count()</p>
+            <p class="text-gray-600">Total tasks in database</p>
+        </div>
+    </div>
+
+    <!-- Database Info -->
+    <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+        <h2 class="text-xl font-semibold mb-4">Database Information</h2>
+        <div class="space-y-2">
+            <p><strong>Database File:</strong> app.db</p>
+            <p><strong>Provider:</strong> SQLite</p>
+            <p><strong>Migrations Applied:</strong> @DbContext.Database.GetAppliedMigrations().Count()</p>
+            <p><strong>Pending Migrations:</strong> @DbContext.Database.GetPendingMigrations().Count()</p>
+        </div>
+    </div>
+</div>
