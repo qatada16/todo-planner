@@ -1,32 +1,30 @@
 // State Pattern implementation for Task Statuses
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using todo_planner.DataL.Data;
-using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
 using TaskStatus = todo_planner.Models.TaskStatus;
 using TaskPriority = todo_planner.Models.TaskPriority;
-using todo_planner.BusinessL.Strategies;
+using todo_planner.BusinessL.Services;
+using todo_planner.DataL.DTOs;
 
 namespace todo_planner.PresentationL.Pages
 {
     public class UserModel : PageModel
     {
-        private readonly AppDbContext _context;
+        private readonly TaskService _taskService;
         private readonly ILogger<UserModel> _logger;
 
-        public UserModel(AppDbContext context, ILogger<UserModel> logger)
+        public UserModel(TaskService taskService, ILogger<UserModel> logger)
         {
-            _context = context;
+            _taskService = taskService;
             _logger = logger;
         }
 
         public Models.User? CurrentUser { get; set; } = null;
-        public List<Models.Task> Tasks { get; set; } = new();
-        public List<Models.Task> CompletedTasks { get; set; } = new();
-        public List<Models.Task> HighPriorityTasks { get; set; } = new();
-        public List<Models.Task> DueTodayTasks { get; set; } = new();
+        public List<TaskResponseDto> Tasks { get; set; } = new();
+        public List<TaskResponseDto> CompletedTasks { get; set; } = new();
+        public List<TaskResponseDto> HighPriorityTasks { get; set; } = new();
+        public List<TaskResponseDto> DueTodayTasks { get; set; } = new();
 
         [BindProperty]
         public TaskInputModel NewTask { get; set; } = new();
@@ -40,7 +38,7 @@ namespace todo_planner.PresentationL.Pages
 
         public async Task<IActionResult> OnGetAsync(int userId, string filter = "all")
         {
-            // Security check - ensure user can only access their own data
+            // Security check
             var sessionUserId = HttpContext.Session.GetInt32("UserId");
             if (sessionUserId == null || sessionUserId != userId)
             {
@@ -51,48 +49,34 @@ namespace todo_planner.PresentationL.Pages
 
             try
             {
-                // Get current user
-                CurrentUser = await _context.Users.FindAsync(userId);
-                var user = await _context.Users.FindAsync(userId);
-                if (user == null)
+                // Get dashboard data using DTO
+                var dashboardDto = await _taskService.GetUserDashboardAsync(userId, SortBy);
+
+                if (dashboardDto.UserId == 0)
                 {
                     return RedirectToPage("/Login");
                 }
-                CurrentUser = user;
 
-                // Get all tasks for this user
-                var allTasks = await _context.Tasks
-                    .Where(t => t.UserId == userId)
-                    .OrderBy(t => t.DueDate)
-                    .ThenBy(t => t.Priority)
-                    .ToListAsync();
+                // Set current user info
+                CurrentUser = new Models.User 
+                { 
+                    Id = dashboardDto.UserId, 
+                    Name = dashboardDto.UserName 
+                };
 
-                Tasks = allTasks.Where(t => t.Status != TaskStatus.Completed).ToList();
-                CompletedTasks = allTasks.Where(t => t.Status == TaskStatus.Completed).ToList();
-                HighPriorityTasks = allTasks.Where(t => t.Priority == TaskPriority.High && t.Status != TaskStatus.Completed).ToList();
-                DueTodayTasks = allTasks.Where(t => t.DueDate.Date == DateTime.Today && t.Status != TaskStatus.Completed).ToList();
+                // Set task lists from DTO
+                Tasks = dashboardDto.ActiveTasks;
+                CompletedTasks = dashboardDto.CompletedTasks;
+                HighPriorityTasks = dashboardDto.HighPriorityTasks;
+                DueTodayTasks = dashboardDto.DueTodayTasks;
 
-                // Apply sorting strategy
-                var sortContext = new TaskSortContext(new SortByDueDateStrategy()); // default
-
-                sortContext.SetStrategy(SortBy switch
+                // Set current sort strategy
+                CurrentSortStrategy = SortBy switch
                 {
-                    "Priority" => new SortByPriorityStrategy(),
-                    "Status" => new SortByStatusStrategy(),
-                    "DueDate" => new SortByDueDateStrategy(),
-                    _ => new SortByDueDateStrategy()
-                });
-
-                CurrentSortStrategy = sortContext.CurrentStrategyName;
-
-                // Sort active tasks
-                Tasks = sortContext.ExecuteStrategy(Tasks).ToList();
-
-                // Sort completed tasks
-                CompletedTasks = sortContext.ExecuteStrategy(CompletedTasks).ToList();
-
-                // Sort high priority tasks
-                HighPriorityTasks = sortContext.ExecuteStrategy(HighPriorityTasks).ToList();
+                    "Priority" => "Priority",
+                    "Status" => "Status",
+                    _ => "Due Date"
+                };
 
                 return Page();
             }
@@ -112,63 +96,62 @@ namespace todo_planner.PresentationL.Pages
 
             try
             {
-                var task = new Models.Task
+                // Create DTO from form input
+                var createTaskDto = new CreateTaskDto
                 {
                     Title = NewTask.Title,
-                    Description = NewTask.Description??string.Empty,
+                    Description = NewTask.Description,
                     DueDate = NewTask.DueDate,
                     Priority = NewTask.Priority,
-                    Status = TaskStatus.Pending,
-                    UserId = userId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    UserId = userId
                 };
 
-                _context.Tasks.Add(task);
-                await _context.SaveChangesAsync();
+                // Call service with DTO
+                var result = await _taskService.CreateTaskAsync(createTaskDto);
+
+                if (!result.IsSuccess)
+                {
+                    TempData["ErrorMessage"] = result.ErrorMessage;
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = result.SuccessMessage;
+                }
 
                 return RedirectToPage("/User", new { userId });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error adding task");
+                TempData["ErrorMessage"] = "Failed to add task";
                 return RedirectToPage("/User", new { userId });
             }
         }
 
-        /// <summary>
-        /// Updated to use State Pattern for status transitions
-        /// Demonstrates proper state transition validation and state-specific behavior
-        /// </summary>
         public async Task<IActionResult> OnPostUpdateStatusAsync(int userId, int taskId, string status)
         {
             try
             {
-                var task = await _context.Tasks.FindAsync(taskId);
-                if (task != null && task.UserId == userId)
+                if (Enum.TryParse<TaskStatus>(status, out var newStatus))
                 {
-                    // Convert string to enum
-                    if (Enum.TryParse<TaskStatus>(status, out var newStatus))
+                    var result = await _taskService.UpdateTaskStatusAsync(taskId, userId, newStatus);
+
+                    if (!result.IsSuccess)
                     {
-                        // Use State Pattern to change task status
-                        // This validates the transition and executes state-specific behavior
-                        task.ChangeState(newStatus);
-                        await _context.SaveChangesAsync();
+                        TempData["ErrorMessage"] = result.ErrorMessage;
+                    }
+                    else
+                    {
+                        TempData["SuccessMessage"] = result.SuccessMessage;
                     }
                 }
 
                 return RedirectToPage("/User", new { userId });
             }
-            catch (InvalidOperationException ex)
-            {
-                // Handle invalid state transitions gracefully
-                _logger.LogWarning(ex, "Invalid state transition attempted");
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToPage("/User", new { userId });
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating task status");
+                TempData["ErrorMessage"] = "Failed to update task status";
                 return RedirectToPage("/User", new { userId });
             }
         }
@@ -177,11 +160,15 @@ namespace todo_planner.PresentationL.Pages
         {
             try
             {
-                var task = await _context.Tasks.FindAsync(taskId);
-                if (task != null && task.UserId == userId)
+                var result = await _taskService.DeleteTaskAsync(taskId, userId);
+
+                if (!result.IsSuccess)
                 {
-                    _context.Tasks.Remove(task);
-                    await _context.SaveChangesAsync();
+                    TempData["ErrorMessage"] = result.ErrorMessage;
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = result.SuccessMessage;
                 }
 
                 return RedirectToPage("/User", new { userId });
@@ -189,33 +176,47 @@ namespace todo_planner.PresentationL.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting task");
+                TempData["ErrorMessage"] = "Failed to delete task";
                 return RedirectToPage("/User", new { userId });
             }
         }
 
         public async Task<IActionResult> OnPostEditTaskAsync(int taskId, int userId, string title, string? description, DateTime dueDate, TaskPriority priority, TaskStatus status)
         {
-            var task = await _context.Tasks.FindAsync(taskId);
-            if (task == null || task.UserId != userId)
+            try
             {
-                return NotFound();
-            }
+                // Create DTO from form input
+                var updateTaskDto = new UpdateTaskDto
+                {
+                    TaskId = taskId,
+                    UserId = userId,
+                    Title = title,
+                    Description = description,
+                    DueDate = dueDate,
+                    Priority = priority,
+                    Status = status
+                };
 
-            // Use State Pattern when changing status in edit
-            if (task.Status != status)
+                // Call service with DTO
+                var result = await _taskService.UpdateTaskAsync(updateTaskDto);
+
+                if (!result.IsSuccess)
+                {
+                    TempData["ErrorMessage"] = result.ErrorMessage;
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = result.SuccessMessage;
+                }
+
+                return RedirectToPage("/User", new { userId });
+            }
+            catch (Exception ex)
             {
-                task.ChangeState(status);
+                _logger.LogError(ex, "Error editing task");
+                TempData["ErrorMessage"] = "Failed to edit task";
+                return RedirectToPage("/User", new { userId });
             }
-
-            task.Title = title;
-            task.Description = description ?? string.Empty;
-            task.DueDate = dueDate;
-            task.Priority = priority;
-            task.UpdatedAt = DateTime.Now;
-
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("/User", new { userId });
         }
 
         public string GetPriorityBorder(TaskPriority priority)
@@ -240,20 +241,12 @@ namespace todo_planner.PresentationL.Pages
             };
         }
 
-        /// <summary>
-        /// State Pattern helper method for UI
-        /// Gets the status color using state pattern
-        /// </summary>
         public string GetStatusColor(TaskStatus status)
         {
             var state = Models.TaskStateFactory.CreateState(status);
             return state.GetStatusColor();
         }
 
-        /// <summary>
-        /// State Pattern helper method for UI
-        /// Gets the status icon using state pattern
-        /// </summary>
         public string GetStatusIcon(TaskStatus status)
         {
             var state = Models.TaskStateFactory.CreateState(status);
@@ -267,7 +260,6 @@ namespace todo_planner.PresentationL.Pages
         [StringLength(100)]
         public string Title { get; set; } = string.Empty;
 
-        // Make Description nullable and remove validation attributes
         public string? Description { get; set; }
 
         [Required]
