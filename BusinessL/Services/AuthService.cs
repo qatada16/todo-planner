@@ -1,69 +1,120 @@
 using todo_planner.Models;
 using todo_planner.DataL.Data;
+using todo_planner.DataL.DTOs;
 using Microsoft.EntityFrameworkCore;
 
-    /// <summary>
-    /// Service for handling user authentication and registration.
-    /// Encapsulates login and registration logic.
-    /// </summary>
 namespace todo_planner.BusinessL.Services
 {
+    /// <summary>
+    /// Service for handling user authentication and registration.
+    /// Encapsulates login and registration logic using DTO pattern.
+    /// </summary>
     public class AuthService
     {
         private readonly AppDbContext _context;
 
-        /// <summary>
-        /// Initializes a new instance of AuthService with the given database context.
-        /// </summary>
-        /// <param name="context">Database context used for accessing Users table</param>
         public AuthService(AppDbContext context)
         {
             _context = context;
         }
 
-
         /// <summary>
-        /// Registers a new user.
-        /// Returns null if email already exists.
+        /// Logs in a user using DTO pattern.
+        /// Returns LoginResponseDto with success/failure status and user data
         /// </summary>
-        public async Task<User?> RegisterAsync(string name, string email, string password)
+        public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
         {
-            // Check if user already exists
-            if (await _context.Users.AnyAsync(u => u.Email == email))
+            try
             {
-                return null;
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+                
+                if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+                {
+                    return new LoginResponseDto
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = "Invalid email or password"
+                    };
+                }
+
+                return new LoginResponseDto
+                {
+                    IsSuccess = true,
+                    UserId = user.Id,
+                    Name = user.Name,
+                    Email = user.Email
+                };
             }
-
-            var user = new User
+            catch (Exception ex)
             {
-                Name = name,
-                Email = email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-                CreatedAt = DateTime.Now
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return user;
+                // TODO: Log exception with ILogger
+                return new LoginResponseDto
+                {
+                    IsSuccess = false,
+                    ErrorMessage = "An error occurred during login. Please try again."
+                };
+            }
         }
 
-
         /// <summary>
-        /// Logs in a user with email and password.
-        /// Returns null if invalid.
+        /// Registers a new user using DTO pattern.
+        /// Returns RegisterResponseDto with success/failure status and user data
         /// </summary>
-
-        public async Task<User?> LoginAsync(string email, string password)
+        public async Task<RegisterResponseDto> RegisterAsync(RegisterRequestDto request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            
-            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            try
             {
-                return null;
-            }
+                // Check if user already exists
+                if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+                {
+                    return new RegisterResponseDto
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = "Email already exists. Please use a different email."
+                    };
+                }
 
-            return user;
+                // Validate password confirmation (double-check even though DTO has validation)
+                if (request.Password != request.ConfirmPassword)
+                {
+                    return new RegisterResponseDto
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = "Passwords do not match"
+                    };
+                }
+
+                // Create new user
+                var user = new User
+                {
+                    Name = request.Name,
+                    Email = request.Email,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                // Return success response
+                return new RegisterResponseDto
+                {
+                    IsSuccess = true,
+                    SuccessMessage = "Account created successfully! You can now login.",
+                    UserId = user.Id,
+                    Name = user.Name,
+                    Email = user.Email
+                };
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log exception with ILogger
+                return new RegisterResponseDto
+                {
+                    IsSuccess = false,
+                    ErrorMessage = "An error occurred during registration. Please try again."
+                };
+            }
         }
     }
 }

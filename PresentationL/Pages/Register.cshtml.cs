@@ -1,16 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using todo_planner.BusinessL.Services;
+using todo_planner.DataL.DTOs;
 
 namespace todo_planner.PresentationL.Pages
 {
     public class RegisterModel : PageModel
     {
         private readonly AuthService _authService;
+        private readonly ILogger<RegisterModel> _logger;
 
-        public RegisterModel(AuthService authService)
+        public RegisterModel(AuthService authService, ILogger<RegisterModel> logger)
         {
             _authService = authService;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -36,32 +39,51 @@ namespace todo_planner.PresentationL.Pages
         {
             if (!ModelState.IsValid)
             {
+                ErrorMessage = "Please fill in all fields correctly";
                 return Page();
             }
 
-            if (Password != ConfirmPassword)
+            try
             {
-                ErrorMessage = "Passwords do not match";
+                // Step 1: Create DTO from form input
+                var registerRequest = new RegisterRequestDto
+                {
+                    Name = Name,
+                    Email = Email,
+                    Password = Password,
+                    ConfirmPassword = ConfirmPassword
+                };
+
+                // Step 2: Send DTO to Business Layer
+                var response = await _authService.RegisterAsync(registerRequest);
+
+                // Step 3: Handle response
+                if (!response.IsSuccess)
+                {
+                    ErrorMessage = response.ErrorMessage ?? "Registration failed";
+                    return Page();
+                }
+
+                // Registration successful
+                SuccessMessage = response.SuccessMessage ?? "Account created successfully!";
+                
+                _logger.LogInformation($"New user registered: {response.Email}");
+
+                // Clear form fields
+                Name = string.Empty;
+                Email = string.Empty;
+                Password = string.Empty;
+                ConfirmPassword = string.Empty;
+                ModelState.Clear();
+
                 return Page();
             }
-
-            var user = await _authService.RegisterAsync(Name, Email, Password);
-
-            if (user == null)
+            catch (Exception ex)
             {
-                ErrorMessage = "Email already exists";
+                _logger.LogError(ex, "Error during registration");
+                ErrorMessage = "An error occurred during registration";
                 return Page();
             }
-
-            SuccessMessage = "Account created successfully! You can now login.";
-            // Clear form
-            Name = string.Empty;
-            Email = string.Empty;
-            Password = string.Empty;
-            ConfirmPassword = string.Empty;
-            ModelState.Clear();
-
-            return Page();
         }
     }
 }

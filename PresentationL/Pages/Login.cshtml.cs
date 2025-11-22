@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Http;
 using todo_planner.BusinessL.Services;
+using todo_planner.DataL.DTOs;
 
 namespace todo_planner.PresentationL.Pages
 {
@@ -38,21 +39,26 @@ namespace todo_planner.PresentationL.Pages
 
             try
             {
-                var user = await _authService.LoginAsync(Email, Password);
-
-                if (user == null)
+                var loginRequest = new LoginRequestDto
                 {
-                    ErrorMessage = "Invalid email or password";
+                    Email = Email,
+                    Password = Password
+                };
+
+                var response = await _authService.LoginAsync(loginRequest);
+
+                if (!response.IsSuccess)
+                {
+                    ErrorMessage = response.ErrorMessage ?? "Login failed";
                     return Page();
                 }
 
-                HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetString("UserName", user.Name);
+                HttpContext.Session.SetInt32("UserId", response.UserId);
+                HttpContext.Session.SetString("UserName", response.Name);
 
-                _logger.LogInformation($"User {user.Email} logged in successfully");
+                _logger.LogInformation($"User {response.Email} logged in successfully");
 
-                // Redirect to user-specific dashboard
-                return RedirectToPage("/User", new { userId = user.Id });
+                return RedirectToPage("/User", new { userId = response.UserId });
             }
             catch (Exception ex)
             {
