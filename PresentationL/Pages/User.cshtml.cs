@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
 using TaskStatus = todo_planner.Models.TaskStatus;
 using TaskPriority = todo_planner.Models.TaskPriority;
+using todo_planner.BusinessL.Strategies;
 
 namespace todo_planner.PresentationL.Pages
 {
@@ -31,6 +32,11 @@ namespace todo_planner.PresentationL.Pages
         public TaskInputModel NewTask { get; set; } = new();
 
         public string CurrentFilter { get; set; } = "all";
+
+        [BindProperty(SupportsGet = true)]
+        public string? SortBy { get; set; }
+
+        public string CurrentSortStrategy { get; set; } = "Due Date";
 
         public async Task<IActionResult> OnGetAsync(int userId, string filter = "all")
         {
@@ -65,6 +71,28 @@ namespace todo_planner.PresentationL.Pages
                 CompletedTasks = allTasks.Where(t => t.Status == TaskStatus.Completed).ToList();
                 HighPriorityTasks = allTasks.Where(t => t.Priority == TaskPriority.High && t.Status != TaskStatus.Completed).ToList();
                 DueTodayTasks = allTasks.Where(t => t.DueDate.Date == DateTime.Today && t.Status != TaskStatus.Completed).ToList();
+
+                // Apply sorting strategy
+                var sortContext = new TaskSortContext(new SortByDueDateStrategy()); // default
+
+                sortContext.SetStrategy(SortBy switch
+                {
+                    "Priority" => new SortByPriorityStrategy(),
+                    "Status" => new SortByStatusStrategy(),
+                    "DueDate" => new SortByDueDateStrategy(),
+                    _ => new SortByDueDateStrategy()
+                });
+
+                CurrentSortStrategy = sortContext.CurrentStrategyName;
+
+                // Sort active tasks
+                Tasks = sortContext.ExecuteStrategy(Tasks).ToList();
+
+                // Sort completed tasks
+                CompletedTasks = sortContext.ExecuteStrategy(CompletedTasks).ToList();
+
+                // Sort high priority tasks
+                HighPriorityTasks = sortContext.ExecuteStrategy(HighPriorityTasks).ToList();
 
                 return Page();
             }

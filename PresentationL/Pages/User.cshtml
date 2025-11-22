@@ -128,26 +128,56 @@
             <!-- Tasks List -->
             <div class="lg:col-span-2">
                 <!-- Filter Tabs -->
-                <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-6 mb-6 border border-dark-600">
-                    <div class="flex space-x-4 border-b border-dark-600">
-                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "all" })"
-                           class="@(Model.CurrentFilter == "all" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
-                            All Tasks (@(Model.Tasks.Count + Model.CompletedTasks.Count))
-                        </a>
-                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser.Id, filter = "active" })"
-                           class="@(Model.CurrentFilter == "active" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
-                            Active (@Model.Tasks.Count)
-                        </a>
-                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "completed" })"
-                           class="@(Model.CurrentFilter == "completed" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
-                            Completed (@Model.CompletedTasks.Count)
-                        </a>
-                        <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "high" })"
-                           class="@(Model.CurrentFilter == "high" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
-                            High Priority (@Model.HighPriorityTasks.Count)
-                        </a>
+                <div class="bg-gradient-to-br from-dark-700 via-dark-600 to-dark-700 rounded-xl shadow-2xl shadow-black/30 p-6 px-2 mb-6 border border-dark-600">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex space-x-2 border-b border-dark-600 flex-1">
+                            <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "all", sortBy = Model.SortBy })"
+                               class="@(Model.CurrentFilter == "all" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
+                                All Tasks (@(Model.Tasks.Count + Model.CompletedTasks.Count))
+                            </a>
+                            <a href="@Url.Page("/User", new { userId = Model.CurrentUser.Id, filter = "active", sortBy = Model.SortBy })"
+                               class="@(Model.CurrentFilter == "active" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
+                                Active (@Model.Tasks.Count)
+                            </a>
+                            <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "completed", sortBy = Model.SortBy })"
+                               class="@(Model.CurrentFilter == "completed" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
+                                Completed (@Model.CompletedTasks.Count)
+                            </a>
+                            <a href="@Url.Page("/User", new { userId = Model.CurrentUser!.Id, filter = "high", sortBy = Model.SortBy })"
+                               class="@(Model.CurrentFilter == "high" ? "border-b-2 border-electric-blue text-electric-blue" : "text-dark-300 hover:text-white") pb-4 px-4 font-medium transition duration-200">
+                                High Priority (@Model.HighPriorityTasks.Count)
+                            </a>
+                        </div>
+                        
+                        <!-- Sort Dropdown (Strategy Pattern Implementation) -->
+                        <div class="flex items-center space-x-2 ml-3">
+                            <label class="text-dark-300 text-sm font-medium flex items-center">
+                                <i class="mr-2"></i>SORT BY:
+                            </label>
+                            <select id="sortSelector" 
+                                    class="px-2 py-2 bg-dark-800 border border-dark-600 rounded-lg text-dark-200 text-sm focus:ring-2 focus:ring-electric-blue focus:border-transparent transition duration-200 cursor-pointer hover:border-electric-blue"
+                                    onchange="handleSortChange(this.value)">
+                                <option value="DueDate" selected="@(Model.SortBy == "DueDate" || string.IsNullOrEmpty(Model.SortBy))">
+                                    📅 Due Date
+                                </option>
+                                <option value="Priority" selected="@(Model.SortBy == "Priority")">
+                                    ⭐ Priority
+                                </option>
+                                <option value="Status" selected="@(Model.SortBy == "Status")">
+                                    🔄 Status
+                                </option>
+                            </select>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Sort Strategy Indicator -->
+                @if (!string.IsNullOrEmpty(Model.CurrentSortStrategy))
+                {
+                    <div class="text-xs text-dark-400 mt-2 text-right">
+                        <i class="fas fa-info-circle mr-1"></i>Sorting by: <span class="text-electric-blue font-medium">@Model.CurrentSortStrategy</span>
+                    </div>
+                }
 
                 <!-- Tasks Grid -->
                 <div class="space-y-4">
@@ -285,3 +315,11 @@
 @await Html.PartialAsync("Shared/_DeleteTaskModal")
 
 <script src="~/js/task-modals.js"></script>
+
+<script>
+    function handleSortChange(sortBy) {
+        const userId = @Model.CurrentUser!.Id;
+        const filter = '@Model.CurrentFilter';
+        window.location.href = `/User/${userId}?filter=${filter}&sortBy=${sortBy}`;
+    }
+</script>
