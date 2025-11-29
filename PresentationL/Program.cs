@@ -59,9 +59,6 @@ app.UseSession();
 
 app.UseRouting();
 
-// Remove or comment out UseAuthorization since we're not using Identity
-// app.UseAuthorization();
-
 app.MapRazorPages();
 
 // Redirect root to login
