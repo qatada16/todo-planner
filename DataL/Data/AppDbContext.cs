@@ -38,46 +38,7 @@ namespace todo_planner.DataL.Data
             // Static date for consistent seed data across different contexts
             var staticDate = new DateTime(2024, 1, 15, 10, 0, 0); // Fixed date used for task creation dates
 
-            // Seed initial users (currently commented out)
-            // modelBuilder.Entity<User>().HasData(
-            // );
-
-            // Seed initial tasks (currently commented out)
-            // modelBuilder.Entity<TaskModel>().HasData(
-            //     new TaskModel
-            //     {
-            //         Id = 1,
-            //         Title = "Complete project proposal",
-            //         Description = "Finish the semester project documentation",
-            //         DueDate = DateTime.Today.AddDays(1),
-            //         Priority = TaskPriority.High,
-            //         Status = TaskStatusEnum.InProgress,
-            //         UserId = 1,
-            //         CreatedAt = staticDate.AddDays(-2)
-            //     },
-            //     new TaskModel
-            //     {
-            //         Id = 2,
-            //         Title = "Buy groceries",
-            //         Description = "Milk, eggs, bread, and fruits",
-            //         DueDate = DateTime.Today,
-            //         Priority = TaskPriority.Low,
-            //         Status = TaskStatusEnum.Pending,
-            //         UserId = 1,
-            //         CreatedAt = staticDate.AddDays(-1)
-            //     },
-            //     new TaskModel
-            //     {
-            //         Id = 3,
-            //         Title = "Study for exams",
-            //         Description = "Prepare for advanced programming test",
-            //         DueDate = DateTime.Today.AddDays(3),
-            //         Priority = TaskPriority.Medium,
-            //         Status = TaskStatusEnum.Pending,
-            //         UserId = 2,
-            //         CreatedAt = staticDate.AddDays(-3)
-            //     }
-            // );
+            
         }
     }
 }
